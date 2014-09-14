@@ -1,0 +1,2 @@
+include *.txt *.ini *.cfg *.rst, *.css
+recursive-include webhelpers2_grid *.txt *.ini *.cfg *.rst *.css
