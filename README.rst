@@ -5,13 +5,12 @@ HTML Grid system that helps generating HTML tables (or other structures) for dat
 sorting column markers and is highly customizable.
 
 
-**DOCUMENTATION**: http://readthedocs.org/docs/ziggurat-foundations/en/latest/
+**DOCUMENTATION**: http://readthedocs.org/docs/webhelpers_grid2/en/latest/
 
-**BUG TRACKER**: https://github.com/ergo/ziggurat_foundations
+**BUG TRACKER**: https://github.com/ergo/webhelpers_grid2/issues
 
 
-Example Usage
-=============
+Example Usage::
 
     test_data = [
                  {"group_name": "foo", "options": "lalala", "id":1},
