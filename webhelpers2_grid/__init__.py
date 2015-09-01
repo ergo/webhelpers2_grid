@@ -4,10 +4,6 @@ A set of CSS styles complementing this helper is in
 "webhelpers2_grid/html/public/stylesheets/grid.css". To use them, include the
 stylesheet in your applcation and set your <table> class to "stylized".
 
-The documentation below is not very clear. This is a known bug. We need a
-native English speaker who uses the module to volunteer to rewrite it.
-
-This module is written and maintained by Ergo^.
 """
 
 from webhelpers2.html.builder import HTML, literal
@@ -16,109 +12,29 @@ class Grid(object):
     """
     This class is designed to aid programmer in the task of creation of
     tables/grids - structures that are mostly built from datasets.
-    
-    To create a grid at minimum one one needs to pass a dataset,
-    like a list of dictionaries, or sqlalchemy proxy or query object::
-    
-        grid = Grid(itemlist, ['_numbered','c1', 'c2','c4'])
 
-    where itemlist in this simple scenario is a list of dicts:
-
-        [{'c1':1,'c2'...}, {'c1'...}, ...]
-    
-    This helper also received the list that defines order in which
-    columns will be rendered - also keep note of special column name that can be
-    passed in list that defines order - ``_numbered`` - this adds additional
-    column that shows the number of item. For paging sql data there one can pass
-    ``start_number`` argument to the grid to define where to start counting.
-    Descendant sorting on ``_numbered`` column decrements the value, you can
-    change how numberign function behaves by overloading ``calc_row_no`` 
-    property.
-    
-    
-    Converting the grid to a string renders the table rows. That's *just*
-    the <tr> tags, not the <table> around them. The part outside the <tr>s
-    have too many variations for us to render it. In many template systems,
-    you can simply assign the grid to a template variable and it will be
-    automatically converted to a string. Example using a Mako template:
-
-    .. code-block:: html
-
-        <table class="stylized">
-        <caption>My Lovely Grid</caption>
-        <col class="c1" />
-        ${my_grid}
-        </table>
-
-    The names of the columns will get automatically converted for
-    humans ie. foo_bar becomes Foo Bar. If you want the title to be something
-    else you can change the grid.labels dict. If you want the column ``part_no``
-    to become ``Catalogue Number`` just do::
-    
-        grid.labels[``part_no``] = u'Catalogue Number'
-    
-    It may be desired to exclude some or all columns from generation sorting
-    urls (used by subclasses that are sorting aware). You can use grids
-    exclude_ordering property to pass list of columns that should not support
-    sorting. By default sorting is disabled - this ``exclude_ordering`` contains
-    every column name.
-        
-    Since various programmers have different needs, Grid is highly customizable.
-    By default grid attempts to read the value from dict directly by key.
-    For every column it will try to output value of current_row['colname'].
-    
-    Since very often this behavior needs to be overridden like we need date
-    formatted, use conditionals or generate a link one can use
-    the  ``column_formats`` dict and pass a rendering function/lambda to it. 
-    For example we want to apppend ``foo`` to part number::
-    
-        def custem_part_no_td(col_num, i, item):
-            return HTML.td(`Foo %s` % item[``part_no``])
-        
-        grid.column_formats[``part_no``] = custem_part_no_td
-    
-    You can customize the grids look and behavior by overloading grids instance
-    render functions::
-    
-        grid.default_column_format(self, column_number, i, record, column_name)
-        by default generates markup like:
-        <td class="cNO">VALUE</td>
-        
-        grid.default_header_column_format(self, column_number, column_name, 
-            header_label)
-        by default generates markup like:
-        <td class="cNO COLUMN_NAME">VALUE</td>
-            
-        grid.default_header_ordered_column_format(self, column_number, order, 
-            column_name, header_label)
-        Used by grids that support ordering of columns in the grid like, 
-        webhelpers.pylonslib.grid.GridPylons.
-        by default generates markup like:
-        <td class="cNO ordering ORDER_DIRECTION COLUMN_NAME">LABEL</td>
-        
-        grid.default_header_record_format(self, headers)
-        by default generates markup like:
-        <tr class="header">HEADERS_MARKUP</tr>
-        
-        grid.default_record_format(self, i, record, columns)
-        Make an HTML table from a list of objects, and soon a list of
-        sequences, a list of dicts, and a single dict. 
-        <tr class="ODD_OR_EVEN">RECORD_MARKUP</tr>
-        
-        grid.generate_header_link(self, column_number, column, label_text)
-        by default just sets the order direction and column properties for grid.
-        Actual link generation is handled by sublasses of Grid.
-        
-        grid.numbered_column_format(self, column_number, i, record)
-        by default generates markup like:
-        <td class="cNO">RECORD_NO</td>
     """
     def __init__(self, itemlist, columns, column_labels=None,
                   column_formats=None, start_number=1,
                  order_column=None, order_direction=None, request=None,
                  url=None, **kw):
-        """ additional keywords are appended to self.additional_kw 
-        handy for url generation """
+        """
+
+        :param itemlist:
+        :param columns:
+        :param column_labels:
+        :param column_formats:
+        :param start_number:
+        :param order_column:
+        :param order_direction:
+        :param request:
+        :param url:
+        :param kw:
+        :return: Grid
+
+        additional keywords are appended to self.additional_kw
+        handy for url generation
+        """
         self.labels = column_labels or {}
         self.exclude_ordering = columns
         self.itemlist = itemlist
@@ -132,7 +48,7 @@ class Grid(object):
         self.order_dir = order_direction
         self.order_column = order_column
         #backward compatibility with old pylons grid
-        if not hasattr(self,'request'):
+        if not hasattr(self, 'request'):
             self.request = request
         self.url_generator = url
         self.additional_kw = kw
@@ -203,31 +119,7 @@ class Grid(object):
         or 
         ``self.default_header_column_format`` 
         based on whether current column is the one that is used for sorting.
-        
-        you need to extend Grid class and overload this method implementing
-        ordering here, whole operation consists of setting
-        self.order_column and self.order_dir to their CURRENT values,
-        and generating new urls for state that header should set set after its
-        clicked
-        
-        (additional kw are passed to url gen. - like for paginate)
-        example URL generation code below::
-        
-            GET = dict(self.request.copy().GET) # needs dict() for py2.5 compat
-            self.order_column = GET.pop("order_col", None)
-            self.order_dir = GET.pop("order_dir", None)       
-            # determine new order
-            if column == self.order_column and self.order_dir == "asc":
-                new_order_dir = "dsc"
-            else:
-                new_order_dir = "asc"
-            self.additional_kw['order_col'] = column
-            self.additional_kw['order_dir'] = new_order_dir  
-            # generate new url for example url_generator uses 
-            # pylons's url.current() or pyramid's current_route_url()
-            new_url = self.url_generator(**self.additional_kw)
-            # set label for header with link
-            label_text = HTML.tag("a", href=new_url, c=label_text)
+
         """ 
         
         # Is the current column the one we're ordering on?
@@ -314,6 +206,15 @@ class ListGrid(Grid):
     
     """
     def __init__(self, itemlist, columns=None, column_labels=None, *args, **kw):
+        """
+
+        :param itemlist:
+        :param columns:
+        :param column_labels:
+        :param args:
+        :param kw:
+        :return:
+        """
         if columns is None:
             columns = range(len(itemlist[0]))
         elif isinstance(columns, int):
