@@ -67,8 +67,8 @@ class Grid(object):
         self.url_generator = url
         self.additional_kw = kw
 
-    def calc_row_no(self, i, column):
-        if self.order_dir == "asc" and self.order_column == column:
+    def calc_row_no(self, i):
+        if self.order_dir in ("asc", None):
             return self.start_number + i
         else:
             return self.start_number - i
@@ -78,7 +78,6 @@ class Grid(object):
 
         for i, column in enumerate(self.columns):
             # let"s generate header column contents
-            label_text = ""
             if column in self.labels:
                 label_text = self.labels[column]
             else:
@@ -94,14 +93,15 @@ class Grid(object):
 
     def make_columns(self, i, record):
         columns = []
+        row_no = self.calc_row_no(i)
         for col_num, column in enumerate(self.columns):
             if column in self.column_formats:
                 r = self.column_formats[column](
-                    col_num + 1, self.calc_row_no(i, column), record
+                    col_num + 1, row_no, record
                 )
             else:
                 r = self.default_column_format(
-                    col_num + 1, self.calc_row_no(i, column), record, column
+                    col_num + 1, row_no, record, column
                 )
             columns.append(r)
         return HTML(*columns)
@@ -146,11 +146,11 @@ class Grid(object):
     #### Default HTML tag formats ####
 
     def default_column_format(self, column_number, i, record, column_name):
-        class_name = "c%s" % (column_number)
+        class_name = "c%s" % column_number
         return HTML.tag("td", record[column_name], class_=class_name)
 
     def numbered_column_format(self, column_number, i, record):
-        class_name = "c%s" % (column_number)
+        class_name = "c%s" % column_number
         return HTML.tag("td", i, class_=class_name)
 
     def default_record_format(self, i, record, columns):
