@@ -147,7 +147,7 @@ class Grid(object):
 
     def default_column_format(self, column_number, i, record, column_name):
         class_name = "c%s" % column_number
-        return HTML.tag("td", record[column_name], class_=class_name)
+        return HTML.tag("td", record.get(column_name), class_=class_name)
 
     def numbered_column_format(self, column_number, i, record):
         class_name = "c%s" % column_number
