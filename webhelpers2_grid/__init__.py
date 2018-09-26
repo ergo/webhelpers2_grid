@@ -8,28 +8,41 @@ stylesheet in your applcation and set your <table> class to "stylized".
 
 from webhelpers2.html.builder import HTML, literal
 
+
 class Grid(object):
     """
     This class is designed to aid programmer in the task of creation of
     tables/grids - structures that are mostly built from datasets.
 
     """
-    def __init__(self, itemlist, columns, column_labels=None,
-                  column_formats=None, start_number=1,
-                 order_column=None, order_direction=None, request=None,
-                 url=None, **kw):
+
+    def __init__(
+        self,
+        itemlist,
+        columns,
+        column_labels=None,
+        column_formats=None,
+        start_number=1,
+        order_column=None,
+        order_direction=None,
+        request=None,
+        url=None,
+        context=None,
+        **kw
+    ):
         """
 
-        :param itemlist:
-        :param columns:
-        :param column_labels:
-        :param column_formats:
-        :param start_number:
-        :param order_column:
-        :param order_direction:
-        :param request:
-        :param url:
-        :param kw:
+        :param itemlist: items to render
+        :param columns: names used to for column information
+        :param column_labels: mapping of column label overrides
+        :param column_formats: mapping of callables for column rendering
+        :param start_number: number of first item in grid
+        :param order_column: column that is being used for ordering
+        :param order_direction: [asc|desc] string informing of order direction
+        :param request: request object
+        :param url: url generator function
+        :param context: context object storing arbitrary variables
+        :param kw: additional keyword parameters that will be passed to url generator
         :return: Grid
 
         additional keywords are appended to self.additional_kw
@@ -42,26 +55,27 @@ class Grid(object):
         self.column_formats = column_formats or {}
         if "_numbered" in columns:
             self.labels["_numbered"] = "#"
-        if "_numbered" not in self.column_formats: 
-            self.column_formats["_numbered"] = self.numbered_column_format 
+        if "_numbered" not in self.column_formats:
+            self.column_formats["_numbered"] = self.numbered_column_format
         self.start_number = start_number
         self.order_dir = order_direction
         self.order_column = order_column
-        #backward compatibility with old pylons grid
-        if not hasattr(self, 'request'):
+        self.context = context
+        # backward compatibility with old pylons grid
+        if not hasattr(self, "request"):
             self.request = request
         self.url_generator = url
         self.additional_kw = kw
-    
+
     def calc_row_no(self, i, column):
-        if self.order_dir == 'dsc' and self.order_column == column:
-            return self.start_number - i
-        else:
+        if self.order_dir == "asc" and self.order_column == column:
             return self.start_number + i
-        
+        else:
+            return self.start_number - i
+
     def make_headers(self):
         header_columns = []
-            
+
         for i, column in enumerate(self.columns):
             # let"s generate header column contents
             label_text = ""
@@ -71,45 +85,44 @@ class Grid(object):
                 label_text = column.replace("_", " ").title()
             # handle non clickable columns
             if column in self.exclude_ordering:
-                header = self.default_header_column_format(i + 1, column,
-                    label_text)
+                header = self.default_header_column_format(i + 1, column, label_text)
             # handle clickable columns
             else:
-                header = self.generate_header_link(i + 1, column, label_text)                
-            header_columns.append(header)               
+                header = self.generate_header_link(i + 1, column, label_text)
+            header_columns.append(header)
         return HTML(*header_columns)
-    
+
     def make_columns(self, i, record):
-        columns = []        
+        columns = []
         for col_num, column in enumerate(self.columns):
             if column in self.column_formats:
-                r = self.column_formats[column](col_num + 1,
-                                                self. calc_row_no(i, column),
-                                                record)
+                r = self.column_formats[column](
+                    col_num + 1, self.calc_row_no(i, column), record
+                )
             else:
-                r = self.default_column_format(col_num + 1,
-                                               self.calc_row_no(i, column),
-                                               record, column)
+                r = self.default_column_format(
+                    col_num + 1, self.calc_row_no(i, column), record, column
+                )
             columns.append(r)
         return HTML(*columns)
-    
+
     def __html__(self):
         """ renders the grid """
         records = []
-        #first render headers record
+        # first render headers record
         headers = self.make_headers()
         r = self.default_header_record_format(headers)
         records.append(r)
         # now lets render the actual item grid
         for i, record in enumerate(self.itemlist):
             columns = self.make_columns(i, record)
-            if hasattr(self, 'custom_record_format'):
+            if hasattr(self, "custom_record_format"):
                 r = self.custom_record_format(i + 1, record, columns)
             else:
                 r = self.default_record_format(i + 1, record, columns)
             records.append(r)
         return HTML(*records)
-    
+
     def __str__(self):
         return self.__html__()
 
@@ -120,23 +133,22 @@ class Grid(object):
         ``self.default_header_column_format`` 
         based on whether current column is the one that is used for sorting.
 
-        """ 
-        
+        """
+
         # Is the current column the one we're ordering on?
-        if (column == self.order_column):
-            return self.default_header_ordered_column_format(column_number,
-                                                             column,
-                                                             label_text)
+        if column == self.order_column:
+            return self.default_header_ordered_column_format(
+                column_number, column, label_text
+            )
         else:
-            return self.default_header_column_format(column_number, column,
-                                                     label_text)            
+            return self.default_header_column_format(column_number, column, label_text)
 
     #### Default HTML tag formats ####
 
     def default_column_format(self, column_number, i, record, column_name):
         class_name = "c%s" % (column_number)
         return HTML.tag("td", record[column_name], class_=class_name)
-    
+
     def numbered_column_format(self, column_number, i, record):
         class_name = "c%s" % (column_number)
         return HTML.tag("td", i, class_=class_name)
@@ -151,16 +163,17 @@ class Grid(object):
     def default_header_record_format(self, headers):
         return HTML.tag("tr", headers, class_="header")
 
-    def default_header_ordered_column_format(self, column_number, column_name,
-                                             header_label):
-        header_label = HTML(header_label, HTML.tag("span", class_="marker"))
+    def default_header_ordered_column_format(
+        self, column_number, column_name, header_label
+    ):
+        dir_char = '&#9650;' if self.order_dir == 'asc' else '&#9660;'
+        header_label = HTML(header_label, HTML.tag("span", literal(dir_char), class_="marker"))
         if column_name == "_numbered":
             column_name = "numbered"
         class_name = "c%s ordering %s %s" % (column_number, self.order_dir, column_name)
         return HTML.tag("td", header_label, class_=class_name)
 
-    def default_header_column_format(self, column_number, column_name,
-        header_label):
+    def default_header_column_format(self, column_number, column_name, header_label):
         if column_name == "_numbered":
             column_name = "numbered"
         if column_name in self.exclude_ordering:
@@ -179,9 +192,11 @@ class ObjectGrid(Grid):
     uses attribute access to retrieve the column values. It works well with
     SQLAlchemy ORM instances.
     """
+
     def default_column_format(self, column_number, i, record, column_name):
         class_name = "c%s" % (column_number)
-        return HTML.tag("td", getattr(record, column_name), class_=class_name)
+        return HTML.tag("td", getattr(record, column_name, None), class_=class_name)
+
 
 class ListGrid(Grid):
     """ A grid class for a sequence of lists.
@@ -205,6 +220,7 @@ class ListGrid(Grid):
     appropriate subscripts for the superclass dict.
     
     """
+
     def __init__(self, itemlist, columns=None, column_labels=None, *args, **kw):
         """
 
@@ -226,7 +242,7 @@ class ListGrid(Grid):
         if isinstance(column_labels, (list, tuple)):
             super_labels = dict(zip(super_columns, column_labels))
         Grid.__init__(self, itemlist, super_columns, super_labels, *args, **kw)
-  
+
     def default_column_format(self, column_number, i, record, column_name):
         class_name = "c%s" % (column_number)
         return HTML.tag("td", record[int(column_name)], class_=class_name)
