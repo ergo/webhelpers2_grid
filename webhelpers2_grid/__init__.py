@@ -33,8 +33,8 @@ class Grid(object):
         order_column=None,
         order_direction=None,
         request=None,
-        url=None,
-        context=None,
+        url_generator=None,
+        exclude_ordering=None,
         **kw
     ):
         """
@@ -47,16 +47,12 @@ class Grid(object):
         :param order_column: column that is being used for ordering
         :param order_direction: [asc|desc] string informing of order direction
         :param request: request object
-        :param url: url generator function
-        :param context: context object storing arbitrary variables
-        :param kw: additional keyword parameters that will be passed to url generator
+        :param url_generator: url generator function
+        :param kw: additional keyword parameters will be stored as ``additional_kw``
         :return: Grid
-
-        additional keywords are appended to self.additional_kw
-        handy for url generation
         """
         self.labels = column_labels or {}
-        self.exclude_ordering = columns
+        self.exclude_ordering = exclude_ordering if exclude_ordering is not None else columns
         self.itemlist = itemlist
         self.columns = columns
         self.column_formats = column_formats or {}
@@ -67,11 +63,10 @@ class Grid(object):
         self.start_number = start_number
         self.order_dir = order_direction
         self.order_column = order_column
-        self.context = context
         # backward compatibility with old pylons grid
         if not hasattr(self, "request"):
             self.request = request
-        self.url_generator = url
+        self.url_generator = url_generator
         self.additional_kw = kw
 
     def calc_row_no(self, i):
@@ -137,7 +132,6 @@ class Grid(object):
         based on whether current column is the one that is used for sorting.
 
         """
-
         # Is the current column the one we're ordering on?
         if column == self.order_column:
             return self.default_header_ordered_column_format(
