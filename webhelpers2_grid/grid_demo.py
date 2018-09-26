@@ -14,6 +14,7 @@ from webhelpers2.html import literal
 from webhelpers2_grid import *
 from webhelpers2.html.tags import link_to
 from webhelpers2.misc import subclasses_of
+
 # XXX You may find other helpers in webhelpers.html.tags useful too
 
 #### Global constants ####
@@ -127,6 +128,11 @@ table.stylized td.ordering.dsc .marker {
 }
 
 table.stylized td.ordering.asc .marker {
+    height: 20px;
+    width: 20px;
+    display: block;
+    float: right;
+    margin: 0px -18px;
 /* background-image for asc marker here */
 }
 
@@ -143,7 +149,8 @@ table.stylized td.ordering a:link,table.stylized td.ordering a:visited {
 }
 """
 
-HTML_TEMPLATE = literal("""\
+HTML_TEMPLATE = literal(
+    """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
@@ -161,21 +168,23 @@ HTML_TEMPLATE = literal("""\
         <p>%(description)s</p>
     </body>
 </html>
-""")
+"""
+)
 # XXX There should be helpers to create a basic HTML file.
 
 test_data = [
-             {"group_name": "foo", "options": "lalala", "id":1},
-             {"group_name": "foo2", "options": "lalala2", "id":2},
-             {"group_name": "foo3", "options": "lalala3", "id":3},
-             {"group_name": "foo4", "options": "lalala4", "id":4},
-             ]
+    {"group_name": "foo", "options": "lalala", "id": 1},
+    {"group_name": "foo2", "options": "lalala2", "id": 2},
+    {"group_name": "foo3", "options": "lalala3", "id": 3},
+    {"group_name": "foo4", "options": "lalala4", "id": 4},
+]
+
 
 class _DemoBase(object):
     title = None
     description = None
 
-    def get_grid(): 
+    def get_grid():
         raise NotImplementedError("subclass responsibility")
 
 
@@ -189,9 +198,10 @@ This table shows a basic grid."""
         """
         basic demo
         """
-        
-        g = Grid(test_data, columns=["_numbered","group_name","options"])
+
+        g = Grid(test_data, columns=["_numbered", "group_name", "options"])
         return g
+
 
 #### Demo classes ###
 class CustomColumnDemo(_DemoBase):
@@ -207,6 +217,7 @@ This table shows a grid with a customized column and header label."""
         translations are dicts holding translation strings correlated with
         integers from db, in this example
         """
+
         def options_td(col_num, i, item):
             # XXX This module can't depend on 'app_globals' or 'url' or
             # external data. Define data within this method or class or
@@ -215,11 +226,12 @@ This table shows a grid with a customized column and header label."""
             u = url("/tickets/view", ticket_id=item["id"])
             a = link_to(item["options"], u)
             return HTML.td(a)
-        
+
         g = Grid(test_data, columns=["_numbered", "group_name", "options"])
-        g.labels["options"] = 'FOOBAAR'
+        g.labels["options"] = "FOOBAAR"
         g.column_formats["options"] = options_td
         return g
+
 
 class OrderShiftDemo(_DemoBase):
     name = "OrderShift"
@@ -230,11 +242,12 @@ This table shows a grid with order starting from 10."""
         """
         order direction demo
         """
-        
-        g = Grid(test_data, columns=["_numbered","group_name","options"],
-                 start_number=10
-                 )
+
+        g = Grid(
+            test_data, columns=["_numbered", "group_name", "options"], start_number=10
+        )
         return g
+
 
 class OrderingDirectionHeaderAwareDemo(_DemoBase):
     name = "OrderDirectionHeaderAwareDemo"
@@ -246,21 +259,25 @@ Options column has sorting set to "asc" """
         """
         order direction demo
         """
-        
-        g = Grid(test_data, columns=["_numbered","group_name","options"],
-                 order_column='options', order_direction='asc'
-                 )
-        #enable ordering support
+
+        g = Grid(
+            test_data,
+            columns=["_numbered", "group_name", "options"],
+            order_column="options",
+            order_direction="asc",
+        )
+        # enable ordering support
         g.exclude_ordering = []
         return g
-    
-    
+
+
 list_data = [
-             [1,'a',3,'c',5],
-             [11,'aa',33,'cc',55],
-             [111,'aaa',333,'ccc',555]
-             ]
-    
+    [1, "a", 3, "c", 5],
+    [11, "aa", 33, "cc", 55],
+    [111, "aaa", 333, "ccc", 555],
+]
+
+
 class ListDemo(_DemoBase):
     name = "List grid demo"
     description = """\
@@ -270,14 +287,18 @@ This table shows a basic grid generated from lists - it has customized order of 
         """
         basic demo
         """
-        
-        g = ListGrid(list_data, columns=[1, 3, 2, 0],
-            column_labels=["One", "Three", "Two", "Zero"])
+
+        g = ListGrid(
+            list_data,
+            columns=[1, 3, 2, 0],
+            column_labels=["One", "Three", "Two", "Zero"],
+        )
         return g
-    
+
+
 demos = subclasses_of(_DemoBase, globals())
 
-#demos = [BasicDemo, CustomColumnDemo]
+# demos = [BasicDemo, CustomColumnDemo]
 
 #### Utility functions ####
 def url(urlpath, **params):
@@ -285,12 +306,14 @@ def url(urlpath, **params):
     # can't think of where.
     return urlpath + "?" + urllib.urlencode(params)
 
+
 def write_file(dir, filename, content):
-    print "... writing '%s'" % filename
+    print("... writing '%s'" % filename)
     path = os.path.join(dir, filename)
     f = open(path, "w")
     f.write(content)
     f.close()
+
 
 #### Main routine ####
 def main():
@@ -301,7 +324,7 @@ def main():
     dir = args[0]
     if not os.path.exists(dir):
         os.makedirs(dir)
-    print "Putting output in directory '%s'" % dir
+    print("Putting output in directory '%s'" % dir)
     write_file(dir, "demo.css", STYLESHEET)
     for class_ in demos:
         d = class_()
@@ -311,8 +334,10 @@ def main():
             "title": d.name or d.__class__.__name__.lower(),
             "description": d.description,
             "grid": d.get_grid(),
-            }
+        }
         html = HTML_TEMPLATE % dic
         write_file(dir, filename, html)
 
-if __name__ == "__main__":  main()
+
+if __name__ == "__main__":
+    main()
