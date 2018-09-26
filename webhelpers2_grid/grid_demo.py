@@ -5,10 +5,15 @@ Run this module as a script::
     python -m webhelpers.html.grid_demo OUTPUT_DIRECTORY
  Dec 16 19:39:54 PST 2009
 """
+from __future__ import print_function
 
 import optparse
 import os
-import urllib
+
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
 
 from webhelpers2.html import literal
 from webhelpers2_grid import *
@@ -302,9 +307,7 @@ demos = subclasses_of(_DemoBase, globals())
 
 #### Utility functions ####
 def url(urlpath, **params):
-    # This should be a helper and I think it's defined somewhere but I
-    # can't think of where.
-    return urlpath + "?" + urllib.urlencode(params)
+    return urlpath + "?" + urlencode(params)
 
 
 def write_file(dir, filename, content):
