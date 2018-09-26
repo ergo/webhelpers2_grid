@@ -52,7 +52,9 @@ class Grid(object):
         :return: Grid
         """
         self.labels = column_labels or {}
-        self.exclude_ordering = exclude_ordering if exclude_ordering is not None else columns
+        self.exclude_ordering = (
+            exclude_ordering if exclude_ordering is not None else columns
+        )
         self.itemlist = itemlist
         self.columns = columns
         self.column_formats = column_formats or {}

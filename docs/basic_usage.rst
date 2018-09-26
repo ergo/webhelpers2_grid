@@ -25,14 +25,14 @@ generate markup from it.
 Basic Example
 -------------
 
-Creating a basic grid object::
+Creating a basic grid object:
 
 To create a grid at minimum one one needs to pass a dataset,
-like a list of dictionaries, or sqlalchemy proxy or query object::
+like an iterable of objects or dictionaries:
 
     grid = Grid(itemlist, ['c1', 'c2','c4'])
 
-where itemlist in this simple scenario is a list of dicts::
+where itemlist in this simple scenario is a list of dicts:
 
     [{'c1':1,'c2'...}, {'c1'...}, ...]
 
@@ -51,7 +51,7 @@ order - ``_numbered`` - this adds additional column that shows the number of ite
 For paging sql data there one can pass
 ``start_number`` argument to the grid to define where to start counting.
 Descendant sorting on ``_numbered`` column decrements the value, you can
-change how numberign function behaves by overloading ``calc_row_no``
+change how numbering function behaves by overloading ``calc_row_no``
 property.
 
 Basic template output
@@ -61,14 +61,14 @@ Converting the grid to a string renders the table rows. By default that's *just*
 the <tr> tags, not the <table> around them. The part outside the <tr>s
 have too many variations for us to render it. In many template systems (like jinja2/mako,
 you can simply assign the grid to a template variable and it will be
-automatically converted to a string. Example using a Mako template:
+automatically converted to a string. Example using a Jinja2 template:
 
 .. code-block:: html
 
     <table class="stylized">
     <caption>My Lovely Grid</caption>
     <col class="c1" />
-    ${my_grid}
+    {{ grid }}
     </table>
 
 Customizing column names
@@ -82,6 +82,31 @@ to become ``Catalogue Number`` just do::
     grid = Grid(itemlist, ['_numbered','part_name', 'part_no'])
     grid.labels["part_no"] = u'Catalogue Number'
 
+You can also control all aspects of grid rendering/behavior by creating your own subclasses of Grid.
+
+
+Fetching the data from row/Customizing column cell markup
+---------------------------------------------------------
+
+Since various programmers have different needs, Grid is highly customizable.
+By default grid attempts to read the value from object attributes (``getattr(record, column)``)
+if this fails there will be an attempt to read it via ``record.get(column)``, if this fails
+``None`` value will be used instead.
+For every column it will try to output value of current_row['colname'].
+
+Since very often this behavior needs to be overridden like we need date
+formatted, use conditionals or generate a link one can use
+the  ``column_formats`` dict and pass a rendering function to it.
+For example we want to apppend ``foo`` to part number::
+
+    class CarPartReportGrid(Grid):
+
+        def __init__(self, *args, **kwargs):
+            super(CustomGrid, self).__init__(*args, **kwargs)
+            self.column_formats['part_no'] = self.custom_part_no_td
+
+        def custom_part_no_td(self, col_num, i, item):
+            return HTML.td('Foo {}'.format(item['part_no']))
 
 Controlling which columns allow sorting the data
 ------------------------------------------------
@@ -154,37 +179,12 @@ same with the exception of handling of request object implementation/url generat
                                                          label_text)
 
 
-Fetching the data from row/Customizing column cell markup
----------------------------------------------------------
+Working with other item types
+-----------------------------
 
-Since various programmers have different needs, Grid is highly customizable.
-By default grid attempts to read the value from dict directly by key.
-For every column it will try to output value of current_row['colname'].
-
-Since very often this behavior needs to be overridden like we need date
-formatted, use conditionals or generate a link one can use
-the  ``column_formats`` dict and pass a rendering function/lambda to it.
-For example we want to apppend ``foo`` to part number::
-
-    def custem_part_no_td(col_num, i, item):
-        return HTML.td('Foo {}'.format(item['part_no']))
-
-    grid.column_formats['part_no'] = custem_part_no_td
-
-The module also includes `ObjectGrid` where the difference between default grid
+The module also includes `ListGrid` where the difference between default grid
 is how default column format function handles data fetching from objects. It
-is a good example how quickly and easy one can customize all aspects of grid behavior::
-
-    class ObjectGrid(Grid):
-        """ A grid class for a sequence of objects.
-
-        This grid class assumes that the rows are objects rather than dicts, and
-        uses attribute access to retrieve the column values. It works well with
-        SQLAlchemy ORM instances.
-        """
-        def default_column_format(self, column_number, i, record, column_name):
-            class_name = "c%s" % (column_number)
-            return HTML.tag("td", getattr(record, column_name), class_=class_name)
+is a good example how quickly and easy one can customize all aspects of grid behavior.
 
 Order markers
 -------------

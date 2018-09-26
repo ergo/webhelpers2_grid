@@ -5,7 +5,7 @@ HTML Grid system that helps generating HTML tables (or other structures) for dat
 sorting column markers and is highly customizable.
 
 
-**DOCUMENTATION**: http://readthedocs.org/docs/webhelpers_grid2/en/latest/
+**DOCUMENTATION**: https://webhelpers-grid2.readthedocs.io
 
 **BUG TRACKER**: https://github.com/ergo/webhelpers_grid2/issues
 
