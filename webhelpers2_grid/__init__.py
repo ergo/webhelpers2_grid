@@ -9,6 +9,13 @@ stylesheet in your applcation and set your <table> class to "stylized".
 from webhelpers2.html.builder import HTML, literal
 
 
+GRID_NOT_FOUND = "__GRID_NO_ATTR_FOUND__"
+
+
+def dummy_value(*args):
+    return None
+
+
 class Grid(object):
     """
     This class is designed to aid programmer in the task of creation of
@@ -96,13 +103,9 @@ class Grid(object):
         row_no = self.calc_row_no(i)
         for col_num, column in enumerate(self.columns):
             if column in self.column_formats:
-                r = self.column_formats[column](
-                    col_num + 1, row_no, record
-                )
+                r = self.column_formats[column](col_num + 1, row_no, record)
             else:
-                r = self.default_column_format(
-                    col_num + 1, row_no, record, column
-                )
+                r = self.default_column_format(col_num + 1, row_no, record, column)
             columns.append(r)
         return HTML(*columns)
 
@@ -143,11 +146,14 @@ class Grid(object):
         else:
             return self.default_header_column_format(column_number, column, label_text)
 
-    #### Default HTML tag formats ####
-
     def default_column_format(self, column_number, i, record, column_name):
         class_name = "c%s" % column_number
-        return HTML.tag("td", record.get(column_name), class_=class_name)
+        # first try to lookup property
+        col_value = getattr(record, column_name, GRID_NOT_FOUND)
+        # if this fails lookup via __getattr__
+        if col_value is GRID_NOT_FOUND:
+            col_value = getattr(record, "get", dummy_value)(column_name)
+        return HTML.tag("td", col_value, class_=class_name)
 
     def numbered_column_format(self, column_number, i, record):
         class_name = "c%s" % column_number
@@ -166,8 +172,10 @@ class Grid(object):
     def default_header_ordered_column_format(
         self, column_number, column_name, header_label
     ):
-        dir_char = '&#9650;' if self.order_dir == 'asc' else '&#9660;'
-        header_label = HTML(header_label, HTML.tag("span", literal(dir_char), class_="marker"))
+        dir_char = "&#9650;" if self.order_dir == "asc" else "&#9660;"
+        header_label = HTML(
+            header_label, HTML.tag("span", literal(dir_char), class_="marker")
+        )
         if column_name == "_numbered":
             column_name = "numbered"
         class_name = "c%s ordering %s %s" % (column_number, self.order_dir, column_name)
@@ -186,16 +194,8 @@ class Grid(object):
 
 
 class ObjectGrid(Grid):
-    """ A grid class for a sequence of objects.
-    
-    This grid class assumes that the rows are objects rather than dicts, and
-    uses attribute access to retrieve the column values. It works well with
-    SQLAlchemy ORM instances.
+    """ Bw. compatibility object
     """
-
-    def default_column_format(self, column_number, i, record, column_name):
-        class_name = "c%s" % (column_number)
-        return HTML.tag("td", getattr(record, column_name, None), class_=class_name)
 
 
 class ListGrid(Grid):
