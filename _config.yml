@@ -1,1 +1,6 @@
 theme: jekyll-theme-cayman
+plugins:
+- jekyll-readme-index
+readme_index:
+  enabled:          true
+  remove_originals: false
