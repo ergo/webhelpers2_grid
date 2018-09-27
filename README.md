@@ -1,9 +1,7 @@
-webhelpers2_grid
-=====================
+# webhelpers2_grid
 
-HTML Grid system that helps generating HTML tables (or other structures) for data presentation, supports ordering,
-sorting column markers and is highly customizable.
-
+HTML Grid renderer that helps generating HTML tables (or other structures) 
+      for data presentation, supports ordering, sorting columns, and is very customizable
 
 **DOCUMENTATION**: https://webhelpers-grid2.readthedocs.io
 
