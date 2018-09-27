@@ -22,6 +22,7 @@ jinja_env = Environment(
 grids_to_render = [
     {
         "name": "Basic demo",
+        "file": "basic_demo.html",
         "description": """
         This table shows a basic grid.
         """,
@@ -29,6 +30,7 @@ grids_to_render = [
     },
     {
         "name": "Custom column demo",
+        "file": "custom_column_demo.html",
         "description": """
         This table shows a grid with a customized column and header label.
         """,
@@ -36,6 +38,7 @@ grids_to_render = [
     },
     {
         "name": "Order shift demo",
+        "file": "order_shift_demo.html",
         "description": """
         This table shows a grid with order starting from 10.
         """,
@@ -43,6 +46,7 @@ grids_to_render = [
     },
     {
         "name": "Header aware of order direction demo",
+        "file": "header_aware_of_order_direction_demo.html",
         "description": """
         This table shows a grid that has a markup indicating order direction.
         Options column has sorting set to "asc" """,
@@ -50,6 +54,7 @@ grids_to_render = [
     },
     {
         "name": "List grid demo",
+        "file": "list_grid_demo.html",
         "description": """This table shows a basic grid generated from 
         lists - it has customized order of columns.""",
         "grid": grid_tests.get_list_grid(),
@@ -69,7 +74,7 @@ def main():
     tmpl = jinja_env.get_template("layout.jinja2")
     for grid_data in grids_to_render:
         rendered = (tmpl.render(**grid_data))
-        write_file('../gh-pages', '{}.html'.format(grid_data['name'].replace(' ', '_').lower()), rendered)
+        write_file('../gh-pages', grid_data['file'], rendered)
 
 
 if __name__ == "__main__":
