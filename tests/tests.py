@@ -149,19 +149,23 @@ def get_list_grid():
 
 def test_basic_grid():
     grid = get_basic_grid()
-
+    rendered = str(grid)
 
 def test_order_shift_grid():
     grid = get_order_shift_grid()
+    rendered = str(grid)
 
 
 def test_custom_columns():
     grid = get_custom_column_grid()
+    rendered = str(grid)
 
 
 def test_direction_aware_grid():
     grid = get_direction_aware_grid()
+    rendered = str(grid)
 
 
 def test_list_grid():
     grid = get_direction_aware_grid()
+    rendered = str(grid)
