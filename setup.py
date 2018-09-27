@@ -9,7 +9,9 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 setup(
     name="webhelpers2_grid",
     version="0.9",
-    description=long_description,
+    description=""" HTML Grid renderer that helps generating HTML tables (or other structures) 
+      for data presentation, supports ordering, sorting columns, and is very customizable
+      """,
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
@@ -26,6 +28,7 @@ setup(
     author="Marcin Lulek",
     author_email="info@webreactor.eu",
     license="BSD",
+    long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
     zip_safe=True,
