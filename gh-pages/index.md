@@ -1,5 +1,3 @@
-HTML Grid renderer that helps generating HTML tables (or other structures) for data presentation, supports ordering, sorting columns, and is very customizable
-
 DOCUMENTATION: https://webhelpers-grid2.readthedocs.io
 
 BUG TRACKER: https://github.com/ergo/webhelpers_grid2/issues

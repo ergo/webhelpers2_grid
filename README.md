@@ -5,6 +5,8 @@ HTML Grid renderer that helps generating HTML tables (or other structures)
 
 **DOCUMENTATION**: https://webhelpers-grid2.readthedocs.io
 
+**DEMOS**: http://ergo.github.io/webhelpers_grid2/gh-pages/ (static page)
+
 **BUG TRACKER**: https://github.com/ergo/webhelpers_grid2/issues
 
 

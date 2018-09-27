@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 from os import path
 from io import open
+
 here = path.abspath(path.dirname(__file__))
 with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
@@ -15,6 +16,12 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3",
+        "Development Status :: 4 - Beta",
+        "Framework :: Pyramid",
+        "Framework :: Django",
+        "Framework :: Flask",
+        "Framework :: Pylons",
+        "Topic :: Internet :: WWW/HTTP",
     ],
     author="Marcin Lulek",
     author_email="info@webreactor.eu",
