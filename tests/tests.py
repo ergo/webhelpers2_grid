@@ -12,7 +12,7 @@ from webhelpers2_grid import Grid, ListGrid
 from webhelpers2.html import HTML
 from webhelpers2.html.tags import link_to
 
-TestRow = namedtuple("TestRow", "group_name options id foo")
+DemoRow = namedtuple("DemoRow", "group_name options id foo")
 
 test_data = [
     {"group_name": "foo", "options": "lalala", "id": 1},
@@ -22,7 +22,7 @@ test_data = [
 ]
 
 test_obj_data = [
-    TestRow(
+    DemoRow(
         group_name="obj {}".format(r["group_name"]),
         options=r["options"],
         id=r["id"] * 2,
