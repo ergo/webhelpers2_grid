@@ -44,15 +44,22 @@ Item number column
 ------------------
 
 A special column name that can be passed in list that defines
-order - ``_numbered`` - this adds additional column that shows the number of item::
+order - ``_numbered`` - this adds additional column that shows the number of item:
 
-    grid = Grid(itemlist, ['_numbered','c1', 'c2','c4'], start_number=10)
+.. literalinclude:: ../tests/tests.py
+    :language: python
+    :lines: 78
 
 For paging sql data there one can pass
 ``start_number`` argument to the grid to define where to start counting.
 Descendant sorting on ``_numbered`` column decrements the value, you can
 change how numbering function behaves by overloading ``calc_row_no``
 property.
+
+
+Resulting rendering:
+
+.. image:: img/basic_grid.png
 
 Basic template output
 ---------------------
@@ -67,7 +74,6 @@ automatically converted to a string. Example using a Jinja2 template:
 
     <table class="stylized">
     <caption>My Lovely Grid</caption>
-    <col class="c1" />
     {{ grid }}
     </table>
 
@@ -97,16 +103,17 @@ For every column it will try to output value of current_row['colname'].
 Since very often this behavior needs to be overridden like we need date
 formatted, use conditionals or generate a link one can use
 the  ``column_formats`` dict and pass a rendering function to it.
-For example we want to apppend ``foo`` to part number::
+For example we want to apppend ``foo`` to part number:
 
-    class CarPartReportGrid(Grid):
+.. literalinclude:: ../tests/tests.py
+    :language: python
+    :lines: 56-75
 
-        def __init__(self, *args, **kwargs):
-            super(CustomGrid, self).__init__(*args, **kwargs)
-            self.column_formats['part_no'] = self.custom_part_no_td
 
-        def custom_part_no_td(self, col_num, i, item):
-            return HTML.td('Foo {}'.format(item['part_no']))
+Resulting rendering:
+
+.. image:: img/custom_grid.png
+
 
 Controlling which columns allow sorting the data
 ------------------------------------------------
@@ -177,6 +184,11 @@ same with the exception of handling of request object implementation/url generat
             else:
                 return self.default_header_column_format(column_number, column,
                                                          label_text)
+
+
+Resulting rendering:
+
+.. image:: img/grid_with_clickable_order_column.png
 
 
 Working with other item types

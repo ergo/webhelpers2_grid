@@ -15,10 +15,10 @@ from webhelpers2.html.tags import link_to
 DemoRow = namedtuple("DemoRow", "group_name options id foo")
 
 test_data = [
-    {"group_name": "foo", "options": "lalala", "id": 1},
-    {"group_name": None, "options": "lalala2", "id": 2},
-    {"group_name": "foo3", "options": "lalala3", "id": 3},
-    {"group_name": "foo4", "options": "lalala4", "id": 4},
+    {"group_name": "foo", "options": "bar", "id": 1},
+    {"group_name": None, "options": "bar2", "id": 2},
+    {"group_name": "foo3", "options": "bar3", "id": 3},
+    {"group_name": "foo4", "options": "bar4", "id": 4},
 ]
 
 test_obj_data = [
@@ -56,7 +56,7 @@ def get_custom_column_grid():
     class CustomGrid(Grid):
         def __init__(self, *args, **kwargs):
             super(CustomGrid, self).__init__(*args, **kwargs)
-            self.labels["options"] = "FOOBAAR"
+            self.labels["options"] = "Custom label"
             self.column_formats["options"] = self.options_td
 
         def options_td(self, col_num, i, item):
@@ -68,7 +68,7 @@ def get_custom_column_grid():
 
     g = CustomGrid(
         test_obj_data,
-        columns=["_numbered", "group_name", "options", "ffff"],
+        columns=["_numbered", "group_name", "options", "non-existant"],
         context={"x": "context var", "y": 99},
     )
     return g
