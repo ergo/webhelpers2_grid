@@ -11,7 +11,7 @@ sorting columns, and has customizable looks.
 
 **DOCUMENTATION**: http://readthedocs.org/docs/webhelpers2_grid/en/latest/
 
-**DEMOS**: http://ergo.github.io/webhelpers_grid2/gh-pages/ (static page)
+**DEMOS**: http://ergo.github.io/webhelpers2_grid/gh-pages/ (static page)
 
 **BUG TRACKER**: https://github.com/ergo/webhelpers2_grid
 

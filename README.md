@@ -3,11 +3,11 @@
 HTML Grid renderer that helps generating HTML tables (or other structures) 
       for data presentation, supports ordering, sorting columns, and is very customizable
 
-**DOCUMENTATION**: https://webhelpers-grid2.readthedocs.io
+**DOCUMENTATION**: https://webhelpers2-grid.readthedocs.io
 
-**DEMOS**: http://ergo.github.io/webhelpers_grid2/gh-pages/ (static page)
+**DEMOS**: http://ergo.github.io/webhelpers2_grid/gh-pages/ (static page)
 
-**BUG TRACKER**: https://github.com/ergo/webhelpers_grid2/issues
+**BUG TRACKER**: https://github.com/ergo/webhelpers2_grid/issues
 
 
 Example Usage::

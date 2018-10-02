@@ -1,4 +1,4 @@
-DOCUMENTATION: https://webhelpers-grid2.readthedocs.io
+DOCUMENTATION: https://webhelpers2-grid.readthedocs.io
 
 BUG TRACKER: https://github.com/ergo/webhelpers_grid2/issues
 
